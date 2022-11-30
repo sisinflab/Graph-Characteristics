@@ -1,0 +1,90 @@
+experiment:
+  backend: pytorch
+  path_output_rec_result: ./results/{0}/recs/
+  path_output_rec_weight: ./results/{0}/weights/
+  path_output_rec_performance: ./results/{0}/performance/
+  data_config:
+    strategy: dataset
+    dataset_path: ../data/amazon-book/dataset.tsv
+  splitting:
+    test_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.2
+    validation_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.1
+  dataset: amazon-book
+  top_k: 50
+  evaluation:
+    cutoffs: [10, 20, 50]
+    simple_metrics: [Recall, Precision, nDCG, EPC, EFD, Gini, SEntropy]
+  gpu: 0
+  external_models_path: ../external/models/__init__.py
+  models:
+    external.LightGCN:
+      meta:
+        hyper_max_evals: 10
+        hyper_opt_alg: tpe
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 10
+        validation_metric: Recall@20
+        restore: False
+      lr: [ loguniform, -9.210340372, -6.90775527898 ] # [0.0001, 0.001]
+      epochs: 400
+      factors: 64
+      batch_size: 128
+      l_w: [ loguniform, -13.815510558, -4.60517018599 ] # [0.000001, 0.01]
+      n_layers: 3
+      seed: 123
+    external.DGCF:
+      meta:
+        hyper_max_evals: 10
+        hyper_opt_alg: tpe
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 10
+        validation_metric: Recall@20
+        restore: False
+      lr: [ loguniform, -9.210340372, -6.90775527898 ] # [0.0001, 0.001]
+      epochs: 400
+      factors: 64
+      batch_size: 128
+      l_w_bpr: [ loguniform, -13.815510558, -4.60517018599 ] # [0.000001, 0.01]
+      l_w_ind: [ loguniform, -13.815510558, -4.60517018599 ] # [0.000001, 0.01]
+      ind_batch_size: 128
+      n_layers: 1
+      routing_iterations: 2
+      intents: 4
+      seed: 123
+    external.SGL:
+      meta:
+        hyper_max_evals: 10
+        hyper_opt_alg: tpe
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 10
+        validation_metric: Recall@20
+        restore: False
+      lr: [ loguniform, -9.210340372, -6.90775527898 ] # [0.0001, 0.001]
+      epochs: 400
+      batch_size: 128
+      factors: 64
+      l_w: [ loguniform, -13.815510558, -4.60517018599 ] # [0.000001, 0.01]
+      n_layers: 3
+      ssl_temp: [ loguniform, -2.30258509299, 0 ] # [0.1, 1]
+      ssl_reg: [ loguniform, -5.29831736655, 0 ] # [0.005, 1]
+      ssl_ratio: [ loguniform, -2.30258509299, -0.69314718056 ] # [0.1, 0.5]
+      sampling: [nd, ed, rw]
+    external.GFCF:
+      meta:
+        hyper_opt_alg: grid
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_metric: Recall@20
+      svd_factors: [256, 512]
+      alpha: [ 0.1, 0.3, 0.5, 0.7, 0.9 ]
