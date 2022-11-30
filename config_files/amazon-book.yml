@@ -17,7 +17,7 @@ experiment:
   top_k: 50
   evaluation:
     cutoffs: [10, 20, 50]
-    simple_metrics: [Recall, Precision, nDCG, EPC, EFD, Gini, SEntropy]
+    simple_metrics: [Recall, Precision, nDCG, HR, nDCGRendle2020, MAP, MAR]
   gpu: 0
   external_models_path: ../external/models/__init__.py
   models:
