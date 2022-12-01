@@ -1,1 +1,0 @@
-from .SLATTICE import SLATTICE
