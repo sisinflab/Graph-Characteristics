@@ -72,6 +72,7 @@ class NameSpaceModel:
 
         self.config_file = open(config_path)
         self.config = load(self.config_file, Loader=FullLoader)
+        self.config['experiment']['gpu'] = kwargs["gpu"]
         name_dataset_output = self.config['experiment']['dataset'] + '_' + kwargs["sampling"] + '_' + str(kwargs["idx"])
         self.config['experiment']['path_output_rec_result'] = self.config['experiment'][
             'path_output_rec_result'].format(name_dataset_output)
