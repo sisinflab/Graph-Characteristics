@@ -78,7 +78,7 @@ experiment:
       ssl_temp: [ loguniform, -2.30258509299, 0 ] # [0.1, 1]
       ssl_reg: [ loguniform, -5.29831736655, 0 ] # [0.005, 1]
       ssl_ratio: [ loguniform, -2.30258509299, -0.69314718056 ] # [0.1, 0.5]
-      sampling: [choice, [nd, ed, rw]]
+      sampling: [nd, ed, rw]
     external.GFCF:
       meta:
         hyper_opt_alg: grid
