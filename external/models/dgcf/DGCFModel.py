@@ -216,8 +216,8 @@ class DGCFModel(torch.nn.Module, ABC):
         gu, gi = torch.reshape(gu, (gu.shape[0], gu.shape[1] * gu.shape[2])), torch.reshape(gi, (
             gi.shape[0], gi.shape[1] * gi.shape[2]))
         user, pos, neg = batch
-        xu_pos = self.forward(inputs=(gu[user], gi[pos]))
-        xu_neg = self.forward(inputs=(gu[user], gi[neg]))
+        xu_pos = self.forward(inputs=(gu[user[:, 0]], gi[pos[:, 0]]))
+        xu_neg = self.forward(inputs=(gu[user[:, 0]], gi[neg[:, 0]]))
 
         difference = torch.clamp(xu_pos - xu_neg, -80.0, 1e8)
         loss_bpr = torch.sum(self.softplus(-difference))
