@@ -1,0 +1,99 @@
+experiment:
+  backend: pytorch
+  path_output_rec_result: ./results/{0}/recs/
+  path_output_rec_weight: ./results/{0}/weights/
+  path_output_rec_performance: ./results/{0}/performance/
+  data_config:
+    strategy: dataset
+    dataset_path: ../data/gowalla/dataset.tsv
+  splitting:
+    test_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.2
+    validation_splitting:
+      strategy: random_subsampling
+      test_ratio: 0.1
+  dataset: gowalla
+  top_k: 20
+  evaluation:
+    cutoffs: [ 20 ]
+    simple_metrics: [Recall, Precision, nDCG]
+  gpu: -1
+  external_models_path: ../external/models/__init__.py
+  models:
+    external.LightGCN:
+      meta:
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 1
+        validation_metric: Recall@20
+        restore: False
+      lr: 0.001
+      epochs: 1000
+      factors: 64
+      batch_size: 128
+      l_w: 1e-4
+      n_layers: 3
+      seed: 123
+      early_stopping:
+        patience: 50
+        mode: auto
+        monitor: Recall@20
+        verbose: True
+    external.DGCF:
+      meta:
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 1
+        validation_metric: Recall@20
+        restore: False
+      lr: 0.001
+      epochs: 1000
+      factors: 64
+      batch_size: 128
+      l_w_bpr: 1e-3
+      l_w_ind: 0.01
+      ind_batch_size: 128
+      n_layers: 1
+      routing_iterations: 2
+      intents: 4
+      seed: 123
+      early_stopping:
+        patience: 50
+        mode: auto
+        monitor: Recall@20
+        verbose: True
+    external.SGL:
+      meta:
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 1
+        validation_metric: Recall@20
+        restore: False
+      lr: 0.001
+      epochs: 1000
+      batch_size: 128
+      factors: 64
+      l_w: 1e-4
+      n_layers: 3
+      ssl_temp: 0.5
+      ssl_reg: 0.5
+      ssl_ratio: 0.5
+      sampling: ed
+      early_stopping:
+        patience: 50
+        mode: auto
+        monitor: Recall@20
+        verbose: True
+    external.GFCF:
+      meta:
+        hyper_opt_alg: grid
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_metric: Recall@20
+      svd_factors: 256
+      alpha: 0.3
