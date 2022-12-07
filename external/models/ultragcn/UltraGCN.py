@@ -117,7 +117,7 @@ class UltraGCN(RecMixin, BaseRecommenderModel):
 
         self._params.best_iteration = 1
 
-        for it in self.iterate(self._epochs, self._params.best_iteration, self.name):
+        for it in self.iterate(self._epochs):
             loss = 0
             steps = 0
             with tqdm(total=int(self._data.transactions // self._batch_size), disable=not self._verbose) as t:
