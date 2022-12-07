@@ -3,7 +3,7 @@ import argparse
 import pandas as pd
 
 parser = argparse.ArgumentParser(description="Run sample main.")
-parser.add_argument('--config', type=str, default='gowalla')
+parser.add_argument('--config', type=str, default='gowalla-fast')
 parser.add_argument('--dataset', type=str, default='gowalla')
 parser.add_argument('--gpu', type=int, default=0)
 args = parser.parse_args()

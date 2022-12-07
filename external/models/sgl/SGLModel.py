@@ -90,7 +90,7 @@ class SGLModel(torch.nn.Module, ABC):
         gamma_u = torch.squeeze(gu).to(self.device)
         gamma_i = torch.squeeze(gi).to(self.device)
 
-        xui = torch.sum(gamma_u * gamma_i, 1)
+        xui = torch.sum(gamma_u * gamma_i, -1)
 
         return xui
 
