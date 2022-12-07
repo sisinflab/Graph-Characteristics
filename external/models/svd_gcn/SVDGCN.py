@@ -59,18 +59,10 @@ class SVDGCN(RecMixin, BaseRecommenderModel):
         self.rate_matrix = torch.from_numpy(data.sp_i_train.todense())
         self.rate_matrix.to(self.device)
 
-        path, _ = os.path.split(self._config.data_config.dataset_path)
-        if not (os.path.exists(path + '/svd_u.npy') or os.path.exists(path + '/svd_i.npy') or os.path.exists(
-                path + '/svd_value.npy')):
-            self.logger.info(
+        self.logger.info(
                 f"Processing singular values as they haven't been calculated before on this dataset...")
-            U, value, V = self.preprocess(path)
-            self.logger.info(f"Processing end!")
-        else:
-            self.logger.info(f"Singular values have already been processed for this dataset!")
-            value = torch.Tensor(np.load(path + r'/svd_value.npy'))
-            U = torch.Tensor(np.load(path + r'/svd_u.npy'))
-            V = torch.Tensor(np.load(path + r'/svd_v.npy'))
+        U, value, V = self.preprocess()
+        self.logger.info(f"Processing end!")
 
         self.user_matrix = ((self.rate_matrix.mm(self.rate_matrix.t())) != 0).float()
         self.item_matrix = ((self.rate_matrix.t().mm(self.rate_matrix)) != 0).float()
@@ -95,7 +87,7 @@ class SVDGCN(RecMixin, BaseRecommenderModel):
                + f"_{self.get_base_params_shortcut()}" \
                + f"_{self.get_params_shortcut()}"
 
-    def preprocess(self, dataset):
+    def preprocess(self):
         D_u = self.rate_matrix.sum(1) + self._alpha
         D_i = self.rate_matrix.sum(0) + self._alpha
 
@@ -115,10 +107,6 @@ class SVDGCN(RecMixin, BaseRecommenderModel):
 
         U, value, V = torch.svd_lowrank(rate_matrix, q=400, niter=30)
 
-        np.save(dataset + r'/svd_u.npy', U.cpu().numpy())
-        np.save(dataset + r'/svd_v.npy', V.cpu().numpy())
-        np.save(dataset + r'/svd_value.npy', value.cpu().numpy())
-
         return U, value, V
 
     def train(self):
@@ -133,7 +121,7 @@ class SVDGCN(RecMixin, BaseRecommenderModel):
             with tqdm(total=int(self._data.transactions // self._batch_size), disable=not self._verbose) as t:
                 for _, _ in enumerate(range(0, self._data.transactions, self._batch_size)):
                     steps += 1
-                    u = np.random.randint(0, self.rate_matrix.shape[0], self._batch_size)
+                    u = np.random.randint(0, self._num_users, self._batch_size)
                     p = torch.multinomial(self.rate_matrix[u], 1, True).squeeze(1)
                     nega = torch.multinomial(1 - self.rate_matrix[u], 1, True).squeeze(1)
                     up = torch.multinomial(self.user_matrix[u], 1, True).squeeze(1)
