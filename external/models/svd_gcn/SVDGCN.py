@@ -59,21 +59,18 @@ class SVDGCN(RecMixin, BaseRecommenderModel):
         self.rate_matrix = torch.from_numpy(data.sp_i_train.todense())
         self.rate_matrix.to(self.device)
 
-        if self._config.data_config.strategy == 'fixed':
-            path, _ = os.path.split(self._config.data_config.train_path)
-            if not (os.path.exists(path + '/svd_u.npy') or os.path.exists(path + '/svd_i.npy') or os.path.exists(
-                    path + '/svd_value.npy')):
-                self.logger.info(
-                    f"Processing singular values as they haven't been calculated before on this dataset...")
-                U, value, V = self.preprocess(path)
-                self.logger.info(f"Processing end!")
-            else:
-                self.logger.info(f"Singular values have already been processed for this dataset!")
-                value = torch.Tensor(np.load(path + r'/svd_value.npy'))
-                U = torch.Tensor(np.load(path + r'/svd_u.npy'))
-                V = torch.Tensor(np.load(path + r'/svd_v.npy'))
+        path, _ = os.path.split(self._config.data_config.dataset_path)
+        if not (os.path.exists(path + '/svd_u.npy') or os.path.exists(path + '/svd_i.npy') or os.path.exists(
+                path + '/svd_value.npy')):
+            self.logger.info(
+                f"Processing singular values as they haven't been calculated before on this dataset...")
+            U, value, V = self.preprocess(path)
+            self.logger.info(f"Processing end!")
         else:
-            raise NotImplementedError('The check when strategy is different from fixed has not been implemented yet!')
+            self.logger.info(f"Singular values have already been processed for this dataset!")
+            value = torch.Tensor(np.load(path + r'/svd_value.npy'))
+            U = torch.Tensor(np.load(path + r'/svd_u.npy'))
+            V = torch.Tensor(np.load(path + r'/svd_v.npy'))
 
         self.user_matrix = ((self.rate_matrix.mm(self.rate_matrix.t())) != 0).float()
         self.item_matrix = ((self.rate_matrix.t().mm(self.rate_matrix)) != 0).float()
