@@ -103,7 +103,7 @@ experiment:
         restore: False
       factors: 64
       epochs: 15
-      batch_size: 32
+      batch_size: 128
       l_w: 0.01
       lr: 7.0
       req_vec: 60
