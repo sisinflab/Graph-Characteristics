@@ -133,7 +133,7 @@ class SVDGCN(RecMixin, BaseRecommenderModel):
             with tqdm(total=int(self._data.transactions // self._batch_size), disable=not self._verbose) as t:
                 for _, _ in enumerate(range(0, self._data.transactions, self._batch_size)):
                     steps += 1
-                    u = np.random.randint(0, self._num_users, self._batch_size)
+                    u = np.random.randint(0, self.rate_matrix.shape[0], self._batch_size)
                     p = torch.multinomial(self.rate_matrix[u], 1, True).squeeze(1)
                     nega = torch.multinomial(1 - self.rate_matrix[u], 1, True).squeeze(1)
                     up = torch.multinomial(self.user_matrix[u], 1, True).squeeze(1)
