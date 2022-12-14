@@ -4,7 +4,7 @@ import os
 
 parser = argparse.ArgumentParser(description="Run collect results.")
 parser.add_argument('--dataset', type=str, default='yelp2018')
-parser.add_argument('--filename', type=str, default='sampling-stats-original.tsv')
+parser.add_argument('--filename', type=str, default='sampling-stats-origin.tsv')
 parser.add_argument('--start_id', type=int, default=0)
 parser.add_argument('--end_id', type=int, default=99)
 parser.add_argument('--characteristics', type=str, default='users items interactions delta_g')
