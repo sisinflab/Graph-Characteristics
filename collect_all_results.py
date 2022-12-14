@@ -37,4 +37,4 @@ for key, value in dict_metrics.items():
         dict_metrics[key].at[idx, 'DGCF'] = current_metric_values[1]
         dict_metrics[key].at[idx, 'UltraGCN'] = current_metric_values[2]
         dict_metrics[key].at[idx, 'SVDGCN'] = current_metric_values[3]
-    dict_metrics[key].to_csv(f'data/{args.dataset}/results-{key}-{start_id}-{end_id}.tsv', sep='\t', index=None)
+    dict_metrics[key].to_csv(f'data/{args.dataset}/results-{key.lower()}-{start_id}-{end_id}.tsv', sep='\t', index=None)
