@@ -48,4 +48,4 @@ for idx, m in enumerate(models):
     })
 
 df = pd.DataFrame.from_dict(models_results)
-df.to_csv(f'data/{args.dataset}/regression-{args.metric}-{args.start_id}-{args.end_id}.tsv', sep='\t', index=None)
+df.to_csv(f'data/{args.dataset}/regression_{args.metric}_{args.start_id}_{args.end_id}.tsv', sep='\t', index=None)
