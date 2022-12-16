@@ -13,7 +13,7 @@ parser.add_argument('--start_id', type=int, default=0)
 parser.add_argument('--end_id', type=int, default=99)
 parser.add_argument('--characteristics', type=str, default='space_size_log shape_log density_log gini_item gini_user')
 parser.add_argument('--metric', type=str, default='Recall')
-parser.add_argument('--splitting', type=str, default='edge-dropout, node-dropout')
+parser.add_argument('--splitting', type=str, default='edge-dropout node-dropout')
 args = parser.parse_args()
 
 DATA_FOLDER = os.path.abspath('./data')
