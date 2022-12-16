@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser(description="Run regression.")
 parser.add_argument('--dataset', type=str, default='gowalla')
 parser.add_argument('--start_id', type=int, default=0)
 parser.add_argument('--end_id', type=int, default=99)
-parser.add_argument('--characteristics', type=str, default='delta_g')
+parser.add_argument('--characteristics', type=str, default='space_size_log shape_log density_log gini_item gini_user')
 parser.add_argument('--metric', type=str, default='recall')
 args = parser.parse_args()
 
