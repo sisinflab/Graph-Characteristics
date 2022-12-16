@@ -1,35 +1,40 @@
 import os
 import re
 import pandas as pd
+import argparse
 from operator import itemgetter
 from characteristics.io.loader import TsvLoader
 from characteristics.io.writer import TsvWriter
 from characteristics.Dataset import GraphDataset
 
+parser = argparse.ArgumentParser(description="Run generate characteristics.")
+parser.add_argument('--dataset', type=str, default='gowalla')
+parser.add_argument('--start_id', type=int, default=0)
+parser.add_argument('--end_id', type=int, default=99)
+parser.add_argument('--characteristics', type=str, default='space_size_log shape_log density_log gini_item gini_user')
+parser.add_argument('--metric', type=str, default='Recall')
+parser.add_argument('--splitting', type=str, default='edge-dropout, node-dropout')
+args = parser.parse_args()
+
 DATA_FOLDER = os.path.abspath('./data')
 OUTPUT_FOLDER = os.path.abspath('./data/')
 RESULT_FOLDER = os.path.abspath('./results/')
 
-accepted_splitting = ['edge-dropout', 'node-dropout']
+accepted_splitting = args.splitting.split(' ')
 
-# prendere in input un range di id di dataset
-start_id = 599
-end_id = 610
+start_id = args.start_id
+end_id = args.end_id
 
-# prendere in input il nome del dataset
 accepted_datasets = ['gowalla', 'amazon-book', 'yelp2018']
-input_dataset = 'gowalla'
+input_dataset = args.dataset
 assert input_dataset in accepted_datasets
 
-metric = 'Recall'
+metric = args.metric
 accepted_metrics = ['Recall', 'Precision', 'nDCG']
 assert metric in accepted_metrics
 
-# lista delle caratteristiche
-characteristics = ['transactions', 'space_size', 'space_size_log', 'shape', 'shape_log', 'density', 'density_log',
-                   'gini_item', 'gini_user']
+characteristics = args.characteristics.split(' ')
 
-# cerca i dataset generati
 dataset_folder = os.path.join(DATA_FOLDER, input_dataset)
 
 splitting_strategies = os.listdir(dataset_folder)
@@ -51,9 +56,7 @@ else:
 
 characteristics_dataset = []
 for idx, d_info in selected_datasets_info.items():
-    performance_folder = os.path.join(RESULT_FOLDER, f'{d_info["dataset"]}_'
-                                                   f'{d_info["splitting"]}_'
-                                                   f'{idx}', 'performance')
+    performance_folder = os.path.join(RESULT_FOLDER, f'{d_info["dataset"]}_{d_info["splitting"]}_{idx}', 'performance')
     if os.path.exists(performance_folder):
         performance_path = os.path.join(performance_folder,
                                         [p for p in os.listdir(performance_folder) if 'rec_cutoff' in p][0])

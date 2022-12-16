@@ -10,7 +10,7 @@ parser.add_argument('--characteristics', type=str, default='delta_g')
 parser.add_argument('--metric', type=str, default='recall')
 args = parser.parse_args()
 
-results = pd.read_csv(f'data/{args.dataset}/results-{args.metric}-{args.start_id}-{args.end_id}.tsv', sep='\t')
+results = pd.read_csv(f'data/{args.dataset}/characteristics_{args.metric}_{args.start_id}_{args.end_id}.tsv', sep='\t')
 models = ['LightGCN', 'DGCF', 'UltraGCN', 'SVDGCN']
 characteristics = args.characteristics.split(' ')
 characteristics_w = ['intercept'] + [c + '_w' for c in characteristics]
@@ -23,7 +23,7 @@ for idx, m in enumerate(models):
     reg = LinearRegression().fit(X, y)
     score = reg.score(X, y)
     adjusted_score = 1 - (1 - score) * ((X.shape[0] - 1) / (X.shape[0] - len(characteristics) - 1))
-    coefs = [reg.intercept_] +  reg.coef_.tolist()
+    coefs = [reg.intercept_] + reg.coef_.tolist()
     models_results.append({
         'model': m,
         'score': score,
