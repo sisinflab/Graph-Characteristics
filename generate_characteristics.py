@@ -5,6 +5,7 @@ import argparse
 from config import *
 import pandas as pd
 from multiprocessing import Pool
+# multiprocessing.set_start_method('fork')
 from operator import itemgetter
 from characteristics.io.loader import TsvLoader
 from characteristics.io.writer import TsvWriter
