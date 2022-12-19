@@ -163,7 +163,7 @@ class RecommendationDataset:
     # -- METRICS --
 
     def get_metric(self, metric):
-        assert metric in self.metrics
+        assert metric in self.metrics, f'{self.__class__.__name__}: metric \'{metric}\' not found.'
         func = getattr(self, metric)
         return func()
 
