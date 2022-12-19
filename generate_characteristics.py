@@ -80,7 +80,6 @@ def compute_characteristics_on_dataset(d_info, idx):
 def compute_characteristics(selected_data):
     # compute characteristics
     characteristics_dataset = []
-    selected_args = ((k, v) for k, v in selected_data.items())
     for idx in selected_data:
         row = compute_characteristics_on_dataset(selected_data[idx], idx)
         if row is not None:
@@ -88,13 +87,15 @@ def compute_characteristics(selected_data):
     return characteristics_dataset
 
 
-def compute_characteristics_mp(selected_data):
+def compute_characteristics_mp(selected_data, n_procs):
     # compute characteristics
     mp_args = ((v, k) for k, v in selected_data.items())
-    with Pool(multiprocessing.cpu_count()) as pool:
+    with Pool(n_procs) as pool:
         characteristics_dataset = pool.starmap_async(compute_characteristics_on_dataset, mp_args)
         characteristics_dataset = characteristics_dataset.get()
+    characteristics_dataset = [x for x in characteristics_dataset if x is not None]
     return characteristics_dataset
+
 
 if __name__ == '__main__':
 
@@ -103,7 +104,6 @@ if __name__ == '__main__':
     # find datasets
     input_dataset = args.dataset
     splittings = args.splitting
-
     dict_datasets, dataset_folder = find_datasets(dataset=input_dataset, selected_splittings=splittings)
 
     start_id = args.start
@@ -113,6 +113,7 @@ if __name__ == '__main__':
     assert metric in ACCEPTED_METRICS
 
     mp = args.mp
+    n_processes = args.proc
 
     characteristics = args.characteristics
 
@@ -126,7 +127,7 @@ if __name__ == '__main__':
 
     # compute characteristics
     if mp:
-        characteristics = compute_characteristics_mp(selected_datasets_info)
+        characteristics = compute_characteristics_mp(selected_datasets_info, n_procs=n_processes)
     else:
         characteristics = compute_characteristics(selected_datasets_info)
 
