@@ -15,7 +15,7 @@ parser.add_argument('--dataset', type=str, default='gowalla')
 parser.add_argument('--start', type=int, default=0)
 parser.add_argument('--end', type=int, default=600)
 parser.add_argument('--characteristics', type=str, nargs='+', default=ACCEPTED_CHARACTERISTICS)
-parser.add_argument('--metric', type=str, default='Recall')
+parser.add_argument('--metric', type=str, nargs='+', default=ACCEPTED_METRICS)
 parser.add_argument('--splitting', type=str, nargs='+', default=ACCEPTED_SPLITTINGS)
 parser.add_argument('--proc', required=False, default=multiprocessing.cpu_count(), type=int)
 parser.add_argument('-mp', action='store_true')
@@ -66,9 +66,12 @@ def compute_characteristics_on_dataset(d_info, idx):
         loader = TsvLoader(performance_path, header=0)
         recs = loader.load()
 
-        metric_performance = dict(zip(recs['model'].map(lambda x: x.split('_')[0]), recs[metric]))
         row.update(d_characteristics)
-        row.update(metric_performance)
+
+        for current_metric in metric:
+            metric_performance = dict(zip(recs['model'].map(lambda x: x.split('_')[0] + '_' + current_metric),
+                                          recs[current_metric]))
+            row.update(metric_performance)
         return row
     else:
         print('generate_characteristic: selected dataset performance are missing.\n'
@@ -110,7 +113,8 @@ if __name__ == '__main__':
     end_id = args.end
 
     metric = args.metric
-    assert metric in ACCEPTED_METRICS
+    for m in metric:
+        assert m in ACCEPTED_METRICS
 
     mp = args.mp
     n_processes = args.proc
@@ -135,5 +139,5 @@ if __name__ == '__main__':
     characteristics = pd.DataFrame(characteristics)
     writer = TsvWriter(main_directory=OUTPUT_FOLDER, drop_header=False)
     writer.write(characteristics,
-                 file_name=f'characteristics_{metric.lower()}_{start_id}_{end_id}',
+                 file_name=f'characteristics_{start_id}_{end_id}',
                  directory=input_dataset)
