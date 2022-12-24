@@ -9,3 +9,5 @@ PyYAML
 scikit_learn
 statsmodels
 networkx
+xgboost
+matplotlib
