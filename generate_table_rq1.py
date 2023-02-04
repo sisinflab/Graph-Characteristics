@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 from itertools import product
 
-path_base = '/Users/claudio/Downloads/data 2'
+path_base = './data'
 
 datasets = ['yelp2018', 'amazon-book', 'gowalla']
 models = ['LightGCN', 'DGCF', 'UltraGCN', 'SVDGCN']
-metrics = ['ndcg', 'recall', 'precision']
+metrics = ['recall', 'precision']
 
 couples = list(product(models, datasets))
 
@@ -35,5 +35,4 @@ for model in models:
         table.append(column.tolist())
 
 report = pd.DataFrame(table).T
-report.to_csv('/Users/claudio/Downloads/report_fam.tsv', sep="&", header=False, index=False)
-print()
+report.to_csv(f'{path_base}/table_rq1.tsv', sep="&", header=False, index=False)

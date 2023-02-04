@@ -1,6 +1,6 @@
 hyperopt
 numpy
-tensorflow-macos
+tensorflow
 tqdm
 scipy
 pandas
@@ -9,5 +9,5 @@ PyYAML
 scikit_learn
 statsmodels
 networkx
-xgboost
 matplotlib
+powerlaw

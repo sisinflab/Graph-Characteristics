@@ -12,9 +12,9 @@ from characteristics.io.writer import TsvWriter
 from characteristics.Dataset import GraphDataset
 
 parser = argparse.ArgumentParser(description="Run generate characteristics.")
-parser.add_argument('--dataset', type=str, default='gowalla')
+parser.add_argument('--dataset', type=str, default='yelp2018')
 parser.add_argument('--start', type=int, default=0)
-parser.add_argument('--end', type=int, default=600)
+parser.add_argument('--end', type=int, default=1)
 parser.add_argument('--characteristics', type=str, nargs='+', default=ACCEPTED_CHARACTERISTICS)
 parser.add_argument('--metric', type=str, nargs='+', default=ACCEPTED_METRICS)
 parser.add_argument('--splitting', type=str, nargs='+', default=ACCEPTED_SPLITTINGS)

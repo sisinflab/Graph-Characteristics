@@ -3,7 +3,6 @@ import argparse
 import pandas as pd
 
 parser = argparse.ArgumentParser(description="Run sample main.")
-parser.add_argument('--config', type=str, default='yelp2018-fast')
 parser.add_argument('--dataset', type=str, default='yelp2018')
 parser.add_argument('--gpu', type=int, default=0)
 args = parser.parse_args()
@@ -14,5 +13,5 @@ for idx, row in stats.iterrows():
     strategy = '-'.join(row['strategy'].split(' '))
     dataset_id = row['dataset_id']
     print(f"\n\nSTARTING TRAINING ON DATASET WITH STRATEGY: {strategy} AND ID: {dataset_id}...")
-    run_experiment(f"config_files/{args.config}.yml", sampling=strategy, idx=dataset_id, gpu=args.gpu)
+    run_experiment(f"config_files/{args.dataset}.yml", sampling=strategy, idx=dataset_id, gpu=args.gpu)
     print(f"\n\nTRAINING ENDED")
