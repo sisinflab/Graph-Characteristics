@@ -24,13 +24,13 @@ experiment:
     external.GFCF:
       meta:
         verbose: True
-          save_weights: False
-          save_recs: False
-          validation_rate: 1
-          validation_metric: Recall@20
-          restore: False
-        svd_factors: 256
-        alpha: 0.3
+        save_weights: False
+        save_recs: False
+        validation_rate: 1
+        validation_metric: Recall@20
+        restore: False
+      svd_factors: 256
+      alpha: 0.3
 #    external.LightGCN:
 #      meta:
 #        verbose: True
