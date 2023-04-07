@@ -3,6 +3,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 import scipy
 from scipy.sparse.linalg import svds
+from sparsesvd import sparsesvd
 
 from elliot.recommender import BaseRecommenderModel
 from elliot.recommender.base_recommender_model import init_charger
@@ -41,7 +42,7 @@ class GFCF(RecMixin, BaseRecommenderModel):
         d_inv = np.power(rowsum, -0.5).flatten()
         d_inv[np.isinf(d_inv)] = 0.
         d_mat = scipy.sparse.diags(d_inv)
-        self.norm_adj = d_mat.dot(adj_mat)
+        norm_adj = d_mat.dot(adj_mat)
 
         colsum = np.array(adj_mat.sum(axis=0))
         d_inv = np.power(colsum, -0.5).flatten()
@@ -49,9 +50,9 @@ class GFCF(RecMixin, BaseRecommenderModel):
         d_mat = scipy.sparse.diags(d_inv)
         self.d_mat_i = d_mat
         self.d_mat_i_inv = scipy.sparse.diags(1 / d_inv)
-        norm_adj = self.norm_adj.dot(d_mat)
-        norm_adj = norm_adj.tocsc()
-        _, _, self.vt = svds(norm_adj, self._svd_factors)
+        norm_adj = norm_adj.dot(d_mat)
+        self.norm_adj = norm_adj.tocsc()
+        _, _, self.vt = sparsesvd(self.norm_adj, self._svd_factors)
 
         self.evaluate()
 

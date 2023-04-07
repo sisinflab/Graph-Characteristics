@@ -9,5 +9,6 @@ PyYAML
 scikit_learn
 statsmodels
 networkx
+sparsesvd
 matplotlib
 powerlaw
