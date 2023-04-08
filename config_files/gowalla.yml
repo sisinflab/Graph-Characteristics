@@ -29,7 +29,7 @@ experiment:
         validation_rate: 1
         validation_metric: Recall@20
         restore: False
-      svd_factors: 128
+      svd_factors: 256
       alpha: 0.3
 #    external.LightGCN:
 #      meta:
