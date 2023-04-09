@@ -52,7 +52,7 @@ class GFCF(RecMixin, BaseRecommenderModel):
         self.d_mat_i_inv = scipy.sparse.diags(1 / d_inv)
         norm_adj = norm_adj.dot(d_mat)
         self.norm_adj = norm_adj.tocsc()
-        _, _, self.vt = svds(self.norm_adj, self._svd_factors)
+        _, _, self.vt = svds(self.norm_adj, self._svd_factors, maxiter=1000000)
 
         self.evaluate()
 
