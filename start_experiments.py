@@ -3,11 +3,12 @@ import argparse
 import pandas as pd
 
 parser = argparse.ArgumentParser(description="Run sample main.")
-parser.add_argument('--dataset', type=str, default='yelp2018')
+parser.add_argument('--dataset', type=str, default='gowalla')
 parser.add_argument('--gpu', type=int, default=0)
 args = parser.parse_args()
 
 stats = pd.read_csv(f'./data/{args.dataset}/sampling-stats.tsv', sep='\t')
+stats = stats.iloc[467:]
 
 for idx, row in stats.iterrows():
     strategy = '-'.join(row['strategy'].split(' '))
