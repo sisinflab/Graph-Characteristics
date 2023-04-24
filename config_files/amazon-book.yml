@@ -21,7 +21,7 @@ experiment:
   gpu: -1
   external_models_path: ../external/models/__init__.py
   models:
-    external.GFCF:
+    external.LightGCN:
       meta:
         verbose: True
         save_weights: False
@@ -29,96 +29,86 @@ experiment:
         validation_rate: 1
         validation_metric: Recall@20
         restore: False
-      svd_factors: 256
-      alpha: 0.0
-#    external.LightGCN:
-#      meta:
-#        verbose: True
-#        save_weights: False
-#        save_recs: False
-#        validation_rate: 1
-#        validation_metric: Recall@20
-#        restore: False
-#      lr: 0.001
-#      epochs: 1000
-#      factors: 64
-#      batch_size: 128
-#      l_w: 1e-4
-#      n_layers: 3
-#      seed: 123
-#      early_stopping:
-#        patience: 5
-#        mode: auto
-#        monitor: Recall@20
-#        verbose: True
-#    external.DGCF:
-#      meta:
-#        verbose: True
-#        save_weights: False
-#        save_recs: False
-#        validation_rate: 1
-#        validation_metric: Recall@20
-#        restore: False
-#      lr: 0.001
-#      epochs: 3000
-#      factors: 64
-#      batch_size: 128
-#      l_w_bpr: 1e-3
-#      l_w_ind: 0.01
-#      ind_batch_size: 128
-#      n_layers: 1
-#      routing_iterations: 2
-#      intents: 4
-#      seed: 123
-#      early_stopping:
-#        patience: 40
-#        mode: auto
-#        monitor: Recall@20
-#        verbose: True
-#    external.UltraGCN:
-#      meta:
-#        verbose: True
-#        save_weights: False
-#        save_recs: False
-#        validation_rate: 1
-#        validation_metric: Recall@20
-#        restore: False
-#      lr: 0.001
-#      epochs: 2000
-#      factors: 64
-#      batch_size: 128
-#      g: 0.0001
-#      l: 2.75
-#      w1: 1e-8
-#      w2: 1.0
-#      w3: 1.0
-#      w4: 1e-8
-#      ii_n_n: 10
-#      n_n_w: 500
-#      s_s_p: False
-#      i_w: 0.0001
-#      seed: 123
-#      early_stopping:
-#        patience: 15
-#        mode: auto
-#        monitor: Recall@20
-#        verbose: True
-#    external.SVDGCN:
-#      meta:
-#        verbose: True
-#        save_weights: False
-#        save_recs: False
-#        validation_rate: 1
-#        validation_metric: Recall@20
-#        restore: False
-#      factors: 64
-#      epochs: 15
-#      batch_size: 128
-#      l_w: 0.01
-#      lr: 7.0
-#      req_vec: 60
-#      beta: 2.0
-#      alpha: 3.0
-#      coef_u: 0.5
-#      coef_i: 0.7
-#      seed: 123
+      lr: 0.001
+      epochs: 1000
+      factors: 64
+      batch_size: 128
+      l_w: 1e-4
+      n_layers: 3
+      seed: 123
+      early_stopping:
+        patience: 5
+        mode: auto
+        monitor: Recall@20
+        verbose: True
+    external.DGCF:
+      meta:
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 1
+        validation_metric: Recall@20
+        restore: False
+      lr: 0.001
+      epochs: 3000
+      factors: 64
+      batch_size: 128
+      l_w_bpr: 1e-3
+      l_w_ind: 0.01
+      ind_batch_size: 128
+      n_layers: 1
+      routing_iterations: 2
+      intents: 4
+      seed: 123
+      early_stopping:
+        patience: 40
+        mode: auto
+        monitor: Recall@20
+        verbose: True
+    external.UltraGCN:
+      meta:
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 1
+        validation_metric: Recall@20
+        restore: False
+      lr: 0.001
+      epochs: 2000
+      factors: 64
+      batch_size: 128
+      g: 0.0001
+      l: 2.75
+      w1: 1e-8
+      w2: 1.0
+      w3: 1.0
+      w4: 1e-8
+      ii_n_n: 10
+      n_n_w: 500
+      s_s_p: False
+      i_w: 0.0001
+      seed: 123
+      early_stopping:
+        patience: 15
+        mode: auto
+        monitor: Recall@20
+        verbose: True
+    external.SVDGCN:
+      meta:
+        verbose: True
+        save_weights: False
+        save_recs: False
+        validation_rate: 1
+        validation_metric: Recall@20
+        restore: False
+      factors: 64
+      epochs: 15
+      batch_size: 128
+      l_w: 0.01
+      lr: 7.0
+      req_vec: 60
+      beta: 2.0
+      alpha: 3.0
+      coef_u: 0.5
+      coef_i: 0.7
+      seed: 123
