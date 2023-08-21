@@ -1,6 +1,6 @@
 # Graph-Characteristics
 
-This is the official repository for the paper "_A Topology-aware Analysis of Graph Collaborative Filtering_", under review at LoG 2023.
+This is the official repository for the paper "_A Topology-aware Analysis of Graph Collaborative Filtering_".
 
 This repository is heavily dependent on the framework **Elliot**, so we suggest you refer to the official GitHub [page](https://github.com/sisinflab/elliot) and [documentation](https://elliot.readthedocs.io/en/latest/).
 
