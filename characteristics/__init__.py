@@ -1,3 +1,4 @@
 import os
 
-DATA_DIR = os.path.abspath('./data')
+FILE_PATH = os.path.abspath(__file__)
+PROJECT_PATH = os.path.abspath(os.path.join(FILE_PATH, os.pardir, os.pardir))
