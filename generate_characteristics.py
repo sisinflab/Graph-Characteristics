@@ -9,7 +9,7 @@ from multiprocessing import Pool
 from operator import itemgetter
 from characteristics.io.loader import TsvLoader
 from characteristics.io.writer import TsvWriter
-from characteristics.Dataset import GraphDataset
+from characteristics.dataset import GraphDataset
 
 parser = argparse.ArgumentParser(description="Run generate characteristics.")
 parser.add_argument('--dataset', type=str, default='yelp2018')

@@ -8,12 +8,13 @@ import torch
 from networkx.algorithms import bipartite
 import csv
 from torch_geometric.utils.dropout import dropout_node, dropout_edge
+from characteristics.io.paths import DATASET_NAME
 
+ADMITTED_SAMPLING_STRATEGIES = {'ND', 'ED'} # node dropout and edge dropout
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run graph sampling (Node Dropout, Edge Dropout).")
     parser.add_argument('--dataset', nargs='?', default='gowalla', help='dataset name')
-    parser.add_argument('--filename', nargs='?', default='dataset.tsv', help='filename')
     parser.add_argument('--sampling_strategies', nargs='+', type=str, default=['ND', 'ED'],
                         help='graph sampling strategy')
     parser.add_argument('--num_samplings', nargs='?', type=int, default=600,
@@ -22,9 +23,6 @@ def parse_args():
                         help='random seed for reproducibility')
 
     return parser.parse_args()
-
-
-args = parse_args()
 
 
 def calculate_statistics(data, info):
@@ -100,9 +98,14 @@ def set_all_seeds(current_seed):
     torch.backends.cudnn.deterministic = True
 
 
-def graph_sampling():
+def graph_sampling(dataset_name, num_samplings, sampling_strategies, random_seed):
+
+    for strategy in sampling_strategies:
+        if strategy not in ADMITTED_SAMPLING_STRATEGIES:
+            raise NotImplementedError(f'This graph sampling strategy (\'{strategy}\') has not been implemented yet!')
+
     # load public dataset
-    dataset = pd.read_csv(f'./data/{args.dataset}/{args.filename}', sep='\t', header=None)
+    dataset = pd.read_csv(f'./data/{dataset_name}/{DATASET_NAME}', sep='\t', header=None)
     initial_num_users = dataset[0].nunique()
     initial_num_items = dataset[1].nunique()
     initial_users = dataset[0].unique().tolist()
@@ -174,7 +177,7 @@ def graph_sampling():
     del graph
 
     # print statistics
-    print(f'DATASET: {args.dataset}')
+    print(f'DATASET: {dataset_name}')
     print(f'Number of users: {num_users}')
     print(f'Number of items: {num_items}')
     print(f'Number of interactions: {m}')
@@ -184,7 +187,7 @@ def graph_sampling():
     extension = args.filename.split('.')[1]
 
     print('\n\nSTART GRAPH SAMPLING...')
-    with open(f'./data/{args.dataset}/sampling-stats.tsv', 'w') as f:
+    with open(f'./data/{dataset_name}/sampling-stats.tsv', 'w') as f:
         fieldnames = ['dataset_id',
                       'strategy',
                       'dropout',
@@ -194,13 +197,13 @@ def graph_sampling():
                       'delta_g']
         writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter='\t')
         writer.writeheader()
-        for idx in range(args.num_samplings):
-            set_all_seeds(args.random_seed + idx)
-            gss = random.choice(args.sampling_strategies)
+        for idx in range(num_samplings):
+            set_all_seeds(random_seed + idx)
+            gss = random.choice(sampling_strategies)
             dr = np.random.uniform(0.7, 0.9)
             if gss == 'ND':
-                if not os.path.exists(f'./data/{args.dataset}/node-dropout/'):
-                    os.makedirs(f'./data/{args.dataset}/node-dropout/')
+                if not os.path.exists(f'./data/{dataset_name}/node-dropout/'):
+                    os.makedirs(f'./data/{dataset_name}/node-dropout/')
                 print(f'\n\nRunning NODE DROPOUT with dropout ratio {dr}')
                 sampled_edge_index, _, _ = dropout_node(edge_index, p=dr, num_nodes=num_users + num_items)
                 current_stats_dict, sampled_graph = calculate_statistics(sampled_edge_index,
@@ -214,13 +217,12 @@ def graph_sampling():
                     sampled_rows = [private_to_public_users[r] for r in sampled_edge_index[0].tolist()]
                     sampled_cols = [private_to_public_items[c] for c in sampled_edge_index[1].tolist()]
                 sampled_dataset = pd.concat([pd.Series(sampled_rows), pd.Series(sampled_cols)], axis=1)
-                sampled_dataset.to_csv(
-                    f'./data/{args.dataset}/node-dropout/{filename_no_extension}-{idx}.{extension}',
-                    sep='\t', header=None, index=None)
+                sampled_dataset.to_csv(f'./data/{dataset_name}/node-dropout/{filename_no_extension}-{idx}.{extension}',
+                                       sep='\t', header=False, index=False)
                 writer.writerow(current_stats_dict)
             elif gss == 'ED':
-                if not os.path.exists(f'./data/{args.dataset}/edge-dropout/'):
-                    os.makedirs(f'./data/{args.dataset}/edge-dropout/')
+                if not os.path.exists(f'./data/{dataset_name}/edge-dropout/'):
+                    os.makedirs(f'./data/{dataset_name}/edge-dropout/')
                 print(f'\n\nRunning EDGE DROPOUT with dropout ratio {dr}')
                 sampled_edge_index, _ = dropout_edge(edge_index, p=dr)
                 current_stats_dict, sampled_graph = calculate_statistics(sampled_edge_index,
@@ -235,13 +237,18 @@ def graph_sampling():
                     sampled_cols = [private_to_public_items[c] for c in sampled_edge_index[1].tolist()]
                 sampled_dataset = pd.concat([pd.Series(sampled_rows), pd.Series(sampled_cols)], axis=1)
                 sampled_dataset.to_csv(
-                    f'./data/{args.dataset}/edge-dropout/{filename_no_extension}-{idx}.{extension}',
-                    sep='\t', header=None, index=None)
+                    f'./data/{dataset_name}/edge-dropout/{filename_no_extension}-{idx}.{extension}',
+                    sep='\t', header=False, index=False)
                 writer.writerow(current_stats_dict)
             else:
-                raise NotImplementedError('This graph sampling strategy has not been implemented yet!')
+                raise NotImplementedError(f'This graph sampling strategy (\'{gss}\') has not been implemented yet!')
     print('\n\nEND GRAPH SAMPLING...')
 
 
 if __name__ == '__main__':
-    graph_sampling()
+    args = parse_args()
+
+    graph_sampling(dataset_name=args.dataset_name,
+                   num_samplings=args.num_samplings,
+                   sampling_strategies=args.sampling_strategies,
+                   random_seed=args.random_seed)

@@ -1,8 +1,6 @@
-import os
 import math
 import pandas as pd
 import numpy as np
-from collections import Counter
 
 # graph libraries
 import networkx
