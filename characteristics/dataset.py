@@ -43,24 +43,22 @@ class RecommendationDataset:
         self.set_columns(user_col, item_col, rating_col, timestamp_col)
 
         # -- users and items setting --
+        self._users = None
+        self._items = None
+        self._n_users = None
+        self._n_items = None
+
         self._sorted_users = None
         self._sorted_items = None
 
         # map users and items with a 0-indexed mapping
-        self._public_to_private_users = self.public_to_private(self._dataset[self.user_col].unique().tolist())
-        self._n_users = len(self._public_to_private_users)
+        self._public_to_private_users = None
+        self._public_to_private_items = None
+        self._private_to_public_users = None
+        self._private_to_public_items = None
 
-        self._public_to_private_items = self.public_to_private(self._dataset[self.item_col].unique().tolist(),
-                                                               self._n_users)
-        self._n_items = len(self._public_to_private_items)
+        # self.to_private()
 
-        self._private_to_public_users = self.private_to_public(self._public_to_private_users)
-        self._private_to_public_items = self.private_to_public(self._public_to_private_items)
-
-        self.to_private()
-
-        self._users = list(range(self._n_users))
-        self._items = list(range(self._n_items))
 
         # -- ratings setting --
 
@@ -93,6 +91,16 @@ class RecommendationDataset:
                         'degree_assortativity_users', 'degree_assortativity_items']
         self._ratings_per_user = None
         self._ratings_per_item = None
+
+    @property
+    def users(self):
+        self._users = self._dataset[self.user_col].unique().tolist()
+        return self._users
+
+    @property
+    def items(self):
+        self._items = self._dataset[self.item_col].unique().tolist()
+        return self._items
 
     @property
     def n_users(self):
@@ -136,7 +144,7 @@ class RecommendationDataset:
 
     @staticmethod
     def public_to_private(lst, offset=0):
-        return {el: idx + offset for idx, el in enumerate(lst)}
+        return dict(zip(lst, range(offset+lst, offset+len(lst))))
 
     @staticmethod
     def private_to_public(pub_to_prvt: dict):
@@ -144,6 +152,22 @@ class RecommendationDataset:
         if len(pub_to_prvt) != len(mapping):
             print('WARNING: private to public mapping could be incorrect. Please, check your code.')
         return mapping
+
+    def map_users_and_items(self, offset=0, items_shift=False):
+        # map users and items with a 0-indexed mapping
+
+        users_offset = offset
+        items_offset = offset
+
+        # users
+        self._public_to_private_users = self.public_to_private(self.users, offset=users_offset)
+        self._private_to_public_users = self.private_to_public(self._public_to_private_users)
+
+        # items
+        if items_shift:
+            items_offset = offset + self.n_users
+        self._public_to_private_items = self.public_to_private(self.items, offset=items_offset)
+        self._private_to_public_items = self.private_to_public(self._public_to_private_items)
 
     def map_dataset(self, user_mapping, item_mapping):
         self._dataset[self.user_col] = self._dataset[self.user_col].map(user_mapping)
@@ -237,7 +261,17 @@ class GraphDataset(RecommendationDataset):
 
         super(GraphDataset, self).__init__(data)
 
-        self.graph = self.networkx_bipartite_graph()
+        self._graph = networkx.Graph()
+        # create mappings
+        self.map_users_and_items(items_shift=True)
+
+        self._graph.add_nodes_from(list(self._public_to_private_users.values()),
+                                   bipartite='users')
+        self._graph.add_nodes_from(list(self._public_to_private_items.values()),
+                                   bipartite='items')
+
+
+
         self.num_edges = len(self.graph.edges)
         self.user_nodes, self.item_nodes = bipartite.sets(self.bipartite_graph)
         self.num_user_nodes, self.num_item_nodes = len(self.user_nodes), len(self.item_nodes)
@@ -604,6 +638,9 @@ class GraphSampler:
         # load data if have not already been loaded
         if self.data is False:
             self.load()
+
+
+        prova = GraphDataset(self._data)
         # derive users and data from the dataset
         self.user_and_item_indexing()
 
